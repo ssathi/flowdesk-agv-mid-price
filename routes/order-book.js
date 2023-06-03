@@ -17,7 +17,7 @@ var exchangesRestApis = [
     }
 ];
 
-router.use('/avg-mid-price', (req, res, next) => {
+router.get('/avg-mid-price', (req, res, next) => {
 
     var midPrices = [];
 
