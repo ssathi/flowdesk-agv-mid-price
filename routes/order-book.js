@@ -26,8 +26,8 @@ router.get('/avg-mid-price', (req, res, next) => {
         requests.push(axios.get(exchange.url));
     });
 
-    // since every api is going to be different response
-    // It is not possible to generalize the response handling
+    // since every api is going to have different response
+    // It is not possible to generalize the response handling logic
     Promise.all(requests)
         .then(responses => {
             // Binance
@@ -53,8 +53,8 @@ router.get('/avg-mid-price', (req, res, next) => {
         });
 
 
-    // since every api is going to be different response
-    // It is not possible to generalize the response handling
+    // since every api is going to have different response
+    // It is not possible to generalize the response handling logic
     const ws = new WebSocket('wss://ws.kraken.com');
 
     ws.on('open', function open() {
@@ -75,7 +75,9 @@ router.get('/avg-mid-price', (req, res, next) => {
             midPrices.push(midPrice);
 
             console.log(midPrices);
-            
+
+            // if having many websokcets, could have a counter to check for the number of responses
+            // to make sure all responses are considered before sending the results
             res.send(getResponse(midPrices));
             ws.terminate();
         }
