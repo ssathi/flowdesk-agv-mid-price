@@ -2,6 +2,7 @@
   "dependencies": {
     "axios": "^1.4.0",
     "body-parser": "^1.20.2",
+    "currency.js": "^2.0.4",
     "express": "^4.18.2",
     "ws": "^8.13.0"
   }

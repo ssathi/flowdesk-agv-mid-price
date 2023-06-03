@@ -1,6 +1,7 @@
 const express = require('express');
-var axios = require('axios');
+const axios = require('axios');
 const WebSocket = require('ws');
+const currency = require('currency.js');
 
 const router = express.Router();
 
@@ -37,7 +38,10 @@ router.get('/avg-mid-price', (req, res, next) => {
             const lastBid1 = bids1[bids1.length - 1];
             const firstAsk1 = asks1[0];
 
-            const midPrice1 = (parseFloat(lastBid1[0]) + parseFloat(firstAsk1[0])) / 2;
+            const midPrice1 = currency(lastBid1[0])
+                .add(currency(firstAsk1[0]))
+                .divide(2);
+
             midPrices.push(midPrice1);
 
             //Huobi
@@ -47,7 +51,10 @@ router.get('/avg-mid-price', (req, res, next) => {
             const lastBid2 = bids2[bids2.length - 1];
             const firstAsk2 = asks2[0];
 
-            const midPrice2 = (lastBid2[0] + firstAsk2[0]) / 2;
+            const midPrice2 = currency(lastBid2[0])
+                .add(currency(firstAsk2[0]))
+                .divide(2);
+
             midPrices.push(midPrice2);
 
         });
@@ -71,10 +78,11 @@ router.get('/avg-mid-price', (req, res, next) => {
             const lastBid = bids[bids.length - 1];
             const firstAsk = asks[0];
 
-            const midPrice = (parseFloat(lastBid[0]) + parseFloat(firstAsk[0])) / 2;
-            midPrices.push(midPrice);
+            const midPrice = currency(lastBid[0])
+                .add(currency(firstAsk[0]))
+                .divide(2);
 
-            console.log(midPrices);
+            midPrices.push(midPrice);
 
             // if having many websokcets, could have a counter to check for the number of responses
             // to make sure all responses are considered before sending the results
@@ -90,9 +98,10 @@ function getResponse(midPrices) {
     if (midPrices.length === 0) {
         return { message: 'Unable to get mid prices!' };
     } else {
-        const sum = midPrices.reduce((a, b) => a + b);
-        const avg = sum / midPrices.length;
-
+        let sum = currency(0);
+        midPrices.forEach(val => sum = sum.add(val));
+        const avg = sum.divide(midPrices.length);
+        console.log('Avg mid price: ' + avg);
         return { averageMidPrice: avg };
     }
 }
